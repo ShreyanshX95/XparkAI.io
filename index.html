@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XparkAI: The Local Commerce Ecosystem</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            --primary-color: #007aff; /* Apple Blue */
+            --gradient-pink: #d946ef;
+            --gradient-purple: #a855f7;
+            --text-dark: #1f2937; 
+            --text-body: #4b5563; 
+            --background-color: #fcfcfc; /* Ultra Light Gray */
+            --card-color: rgba(255, 255, 255, 0.9); /* Subtle Transparency for Glass */
+            --border-color: #e5e7eb;
+            --positive-green: #22c55e;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* LIQUID GLASS / GLASSMORPHISM EFFECT */
+        .glass-card {
+            background-color: var(--card-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.7); 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); 
+            border-radius: 20px;
+        }
+
+        /* Black Glass Card (Apple Product Card Style) */
+        .black-glass-card {
+            background-color: rgba(10, 10, 10, 0.85); /* Near Black with slight transparency */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            color: white;
+        }
+
+        /* Page Transition Animation */
+        .page-container {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 0;
+            transform: translateX(100%);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+        .page-container.active {
+            opacity: 1;
+            transform: translateX(0);
+            position: relative;
+            display: block;
+        }
+        
+        /* Primary Button (Apple-like) */
+        .btn-primary {
+            background: linear-gradient(135deg, #007aff 0%, #005bb5 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(0, 122, 255, 0.45);
+        }
+        .input-focus {
+             color: var(--text-dark);
+             border-color: #cccccc;
+             transition: all 0.2s ease;
+        }
+        .input-focus:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        /* Gradient for Headings */
+        .gradient-heading {
+            background: linear-gradient(90deg, #007aff, #005bb5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            font-weight: 300; 
+        }
+        .gradient-heading-2 {
+            background: linear-gradient(90deg, var(--gradient-pink), var(--gradient-purple)); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            font-weight: 400; 
+        }
+        .font-thin-h {
+            font-weight: 200; 
+        }
+
+        /* Bar Chart Mockup */
+        .bar-chart-mockup {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 150px;
+            border-left: 2px solid rgba(255,255,255,0.2);
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding: 10px;
+        }
+        .bar {
+            width: 20%;
+            background: linear-gradient(to top, var(--primary-color), #00c6ff);
+            border-radius: 4px 4px 0 0;
+            animation: bar-grow 1.5s ease-out;
+        }
+        @keyframes bar-grow {
+            0% { height: 0; }
+        }
+
+        /* Particle effect adjustment: Constrained within the processing modal */
+        #processing-modal #particle-area {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #processing-modal .particle {
+            position: absolute;
+            width: 4px; /* Tiny particles */
+            height: 4px; /* Tiny particles */
+            background-color: var(--primary-color); 
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: particle-motion 1.2s ease-out forwards;
+        }
+        @keyframes particle-motion {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* NEW: Gauge Meter CSS */
+        .gauge-container {
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        .gauge-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 50%; /* 2:1 Aspect Ratio */
+            overflow: hidden;
+            border-radius: 100px 100px 0 0;
+        }
+        .gauge-dial {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200%; /* Full height for rotation */
+            border-radius: 50%;
+            background: conic-gradient(
+                #ef4444 0deg 45deg, 
+                #f97316 45deg 90deg, 
+                #22c55e 90deg 180deg
+            );
+            border: 12px solid #374151; /* Dark gray bg */
+            border-bottom-color: transparent;
+            transform: rotate(-90deg); /* Start from the left */
+        }
+        .gauge-mask {
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 140%;
+            background: #1f2937; /* Black card bg */
+            border-radius: 50%;
+        }
+        .gauge-needle {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 3px;
+            height: 45%;
+            background: var(--positive-green); /* Green needle */
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(var(--needle-rotation, 0deg));
+            transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 0 5px var(--positive-green);
+        }
+        .gauge-center-dial {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            background: #9ca3af;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .gauge-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--positive-green);
+            margin-top: -10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Navbar (Visible on all main pages) -->
+    <nav id="main-navbar" class="sticky top-0 z-50 bg-white shadow-md border-b border-border-color hidden">
+        <div class="w-full max-w-7xl mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900 cursor-pointer" onclick="navigate('landing-page')">Xpark<span class="text-blue-500">AI</span></h1>
+            <div class="space-x-6 text-sm font-medium hidden md:flex" id="nav-links">
+                <!-- Links will be populated by JS -->
+            </div>
+            <button class="bg-gray-100 hover:bg-gray-200 px-4 py-1.5 rounded-lg text-gray-700 text-sm font-semibold transition duration-150" onclick="navigate('login-page')">
+                Back to Login
+            </button>
+        </div>
+    </nav>
+
+    <main class="w-full max-w-7xl mx-auto p-4 md:p-8 relative">
+        
+        <!-- ============================================== -->
+        <!-- 1. LANDING PAGE -->
+        <!-- ============================================== -->
+        <section id="landing-page" class="page-container active h-full pt-16">
+            <div class="glass-card p-12 md:p-20 text-center">
+                <h2 class="text-7xl md:text-9xl font-thin-h mb-4 tracking-tight leading-none text-gray-900">
+                    <span class="gradient-heading">XparkAI</span>: Your City, <span class="gradient-heading-2">Unlocked</span>.
+                </h2>
+                <p class="text-2xl md:text-3xl text-gray-600 max-w-4xl mx-auto mb-10 font-light italic">
+                    "Apki Dukaan, Apki Ungliyon Par."
+                </p>
+
+                <div class="max-w-4xl mx-auto space-y-8 text-left text-gray-700">
+                    <h3 class="text-3xl font-light gradient-heading-2">Beyond Search: A Cognitive Commerce Network.</h3>
+                    <p class="text-body leading-relaxed">
+                        Imagine an AI that holds the real-time inventory, price history, and stock of every local shop—from the tiny electronics repair store to the largest Reliance Digital. XparkAI is that reality. It uses a collective, private database to provide consumers with the absolute best deal, while equipping retailers with AI agents that handle all the repetitive tasks, freeing them to focus purely on growth and customer service.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-5 bg-white/70 rounded-xl border border-border-color shadow-md">
+                            <i class="ph-drop-duotone text-3xl text-red-500 mb-2"></i>
+                            <h4 class="font-semibold text-xl mb-1 text-gray-900">Emergency & Health</h4>
+                            <p class="text-sm text-gray-600">Instantly locate critical supplies, from specific blood types to rare medical equipment, across the city.</p>
+                        </div>
+                        <div class="p-5 bg-white/70 rounded-xl border border-border-color shadow-md">
+                            <i class="ph-shield-check-duotone text-3xl text-green-600 mb-2"></i>
+                            <h4 class="font-semibold text-xl mb-1 text-gray-900">Retailer Empowerment</h4>
+                            <p class="text-sm text-gray-600">Dynamic pricing, automated invoicing, and competitive suggestion agents that run 24/7/365.</p>
+                        </div>
+                        <div class="p-5 bg-white/70 rounded-xl border border-border-color shadow-md">
+                            <i class="ph-map-pin-line-duotone text-3xl text-orange-500 mb-2"></i>
+                            <h4 class="font-semibold text-xl mb-1 text-gray-900">Geo-Fenced Savings</h4>
+                            <p class="text-sm text-gray-600">Get automatic notifications when you cross the threshold of a shop that stocks your list items cheaper.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-primary mt-12 px-10 py-4 rounded-xl text-white text-lg font-semibold" onclick="navigate('login-page')">
+                    Launch XparkAI Platform <i class="ph-arrow-right-bold ml-2"></i>
+                </button>
+            </div>
+             <footer class="mt-8 text-center text-sm text-gray-500 space-y-4">
+                 <div class="flex justify-center space-x-6">
+                    <a href="#" class="hover:text-primary transition">About Us</a>
+                    <a href="#" class="hover:text-primary transition">Contact Support</a>
+                    <a href="#" class="hover:text-primary transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-primary transition">Retailer Signup</a>
+                 </div>
+                <p>XparkAI: Revolutionizing Local Commerce since 2025. <br> 
+                <span class="text-xs italic mt-1 block">Note: This prototype is built for demonstration purposes and uses mock data localized to Patia, Bhubaneswar.</span></p>
+            </footer>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 2. LOGIN / ROLE SELECTION PAGE -->
+        <!-- ============================================== -->
+        <section id="login-page" class="page-container h-full pt-40">
+            <div class="max-w-md mx-auto glass-card p-10 text-center">
+                <h3 class="text-4xl font-light mb-8 text-gray-900">Welcome Back</h3>
+                <p class="text-sm text-gray-500 mb-6">Select your profile to enter the XparkAI network.</p>
+
+                <div class="space-y-4">
+                    <button class="w-full bg-blue-50 text-primary border-primary border-2 p-4 rounded-xl font-semibold text-lg hover:bg-blue-100 transition duration-150" onclick="fakeLogin('customer')">
+                        <i class="ph-person-duotone mr-2"></i> Customer: Find Savings
+                    </button>
+                    <button class="w-full bg-green-50 text-green-600 border-green-600 border-2 p-4 rounded-xl font-semibold text-lg hover:bg-green-100 transition duration-150" onclick="fakeLogin('retailer')">
+                        <i class="ph-storefront-duotone mr-2"></i> Retailer: Activate Agent
+                    </button>
+                </div>
+            </div>
+            <p id="auth-status" class="mt-8 text-center text-sm text-gray-500">Initializing Secure Session...</p>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- 3. CUSTOMER DASHBOARD (Search, Map, Lists) -->
+        <!-- ============================================== -->
+        <section id="customer-dashboard" class="page-container pt-10">
+            <header class="mb-10 text-center">
+                <h2 class="text-4xl font-thin-h mb-2 text-gray-900">Your Personal AI Agent is Active.</h2>
+                <p class="text-lg text-gray-600">Real-time inventory access across Patia, Bhubaneswar.</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                
+                <!-- Search & Results -->
+                <div class="lg:col-span-2 glass-card p-8 h-full flex flex-col">
+                    <h3 class="text-3xl font-light mb-6 flex items-center">
+                        <i class="ph-magnifying-glass-duotone text-4xl mr-3 text-blue-500"></i>
+                        <span class="gradient-heading">Intelligent Product Search</span>
+                    </h3>
+                    
+                    <div class="mb-6 flex flex-col space-y-4">
+                        <div class="flex space-x-3">
+                            <input type="text" id="ai-query" placeholder="Search for item (e.g., iPhone 15 Pro Max, A+ Blood, Nandini Paneer)"
+                                class="flex-grow p-4 rounded-xl bg-white border input-focus transition duration-200 placeholder-gray-400">
+                            <button id="search-button" onclick="performQuery()"
+                                class="btn-primary px-8 py-4 rounded-xl font-semibold text-white flex items-center justify-center whitespace-nowrap">
+                                <i class="ph-magnifying-glass-bold text-xl mr-2"></i> Search
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                             <button onclick="setQuery('Dairy Milk 75g')" class="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dairy Milk</button>
+                             <button onclick="setQuery('iPhone 15 Pro Max')" class="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition">iPhone Price</button>
+                             <button onclick="setQuery('A+ Blood')" class="text-sm px-3 py-1 rounded-full bg-red-100 text-red-600 border border-red-300 hover:bg-red-200 transition">Emergency: Blood</button>
+                             <button onclick="setQuery('Basmati Rice 2kg')" class="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Rice</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-grow bg-white/80 p-6 rounded-2xl shadow-inner overflow-y-auto min-h-[300px] border border-border-color">
+                        <h4 class="text-xl font-medium mb-4 text-gray-700 border-b border-border-color pb-2">Top 5 Real-Time Results (Patia)</h4>
+                        <div id="query-results" class="space-y-4">
+                            <p class="text-gray-500 italic flex items-center">
+                                <i class="ph-keyboard-duotone text-2xl mr-2"></i> Enter your query above to see immediate local inventory results.
+                            </p>
+                        </div>
+                        <div id="smart-suggestions" class="mt-6 space-y-3 hidden">
+                            <h5 class="text-lg font-semibold text-gray-800 flex items-center border-t border-border-color pt-4">
+                                <i class="ph-sparkling-duotone text-xl mr-2 text-primary"></i> Smart Shopping Suggestions
+                            </h5>
+                            <!-- Suggestions populate here -->
+                        </div>
+                    </div>
+
+                    <!-- Price Trend Analysis -->
+                    <div id="price-trend-section" class="mt-8 pt-6 border-t border-border-color hidden">
+                        <h4 class="text-2xl font-light mb-4 flex items-center">
+                            <i class="ph-chart-line-up-duotone text-3xl mr-3 text-green-600"></i>
+                            <span class="text-gray-900">Price History Deep Dive (via pricehistory.app)</span>
+                        </h4>
+                        <div class="bg-gray-50/70 p-4 rounded-xl border border-border-color shadow-md">
+                            <p class="text-sm font-semibold mb-2 text-gray-700">6-Month Trend for: <span id="trend-item" class="text-primary"></span></p>
+                            <div class="price-trend-chart-mockup">
+                                <p class="text-xs text-gray-500 absolute bottom-5 right-2">Trend analysis suggests the current price is 4% below the 90-day average.</p>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-3 flex items-center"><i class="ph-link-simple-duotone mr-1"></i> Data Visualization Mockup powered by XparkAI integration with pricehistory.app</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map & Lists & Alerts -->
+                <div class="lg:col-span-1 flex flex-col space-y-10">
+                    
+                    <!-- Location-Based Alerts -->
+                    <div class="glass-card p-6 border-yellow-300 border-2">
+                        <h4 class="text-2xl font-light mb-4 flex items-center text-gray-900">
+                            <i class="ph-wifi-high-duotone text-3xl mr-3 text-yellow-600"></i>
+                            Geo-Fencing & Price Alerts
+                        </h4>
+                        <p class="text-sm text-gray-600 mb-4">You have one active item alert for your location:</p>
+                        <div class="bg-white p-3 rounded-xl border border-yellow-400 shadow-sm flex items-center animate-pulse">
+                             <i class="ph-tag-duotone text-2xl mr-3 text-red-500"></i>
+                             <p class="text-sm font-semibold text-gray-800">Alert: Your Nandini Paneer is cheaper at QuickMart (0.4 km)!</p>
+                        </div>
+                    </div>
+
+                    <!-- Google Maps Preview -->
+                    <div class="glass-card p-6">
+                        <h4 class="text-2xl font-light mb-4 flex items-center text-gray-900">
+                            <i class="ph-map-pin-duotone text-3xl mr-3 text-primary"></i>
+                            Live Map Preview
+                        </h4>
+                        <div id="map-preview-cust" class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden border border-border-color flex items-center justify-center text-gray-500 italic text-sm">
+                            Map will display the location of the best-ranked item.
+                        </div>
+                    </div>
+                    
+                    <!-- Smart To-Do & Shopping List -->
+                    <div id="lists" class="glass-card p-6 flex flex-col flex-grow">
+                        <h3 class="text-2xl font-light mb-6 flex items-center">
+                            <i class="ph-list-checks-duotone text-3xl mr-3 text-green-600"></i>
+                            <span class="gradient-heading">Smart Lists (Persistent)</span>
+                        </h3>
+
+                        <div class="mb-4">
+                            <div id="list-selector" class="flex flex-wrap gap-2 mb-3">
+                                <button onclick="showCreateListModal()" class="text-sm px-3 py-1 rounded-full bg-white text-gray-600 hover:bg-gray-100 transition duration-150 flex items-center border border-border-color shadow-sm">
+                                    <i class="ph-plus-bold mr-1"></i> New List
+                                </button>
+                            </div>
+                            <p id="list-name-display" class="text-xl font-medium text-gray-800 mb-2"></p>
+                        </div>
+                        
+                        <div id="add-item-form" class="flex mb-4 hidden">
+                            <input type="text" id="new-item-text" placeholder="Add item..."
+                                class="flex-grow p-2 rounded-l-xl bg-white border input-focus">
+                            <button onclick="addItem()"
+                                class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-r-xl font-medium text-white transition duration-150">
+                                Add
+                            </button>
+                        </div>
+
+                        <div class="flex-grow bg-white/80 p-4 rounded-2xl shadow-inner overflow-y-auto min-h-[150px] border border-border-color">
+                            <ul id="item-list" class="space-y-2">
+                                <li id="list-placeholder" class="text-gray-500 italic">Select or create a list to start adding items.</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Modal for Creating New List -->
+                        <div id="create-list-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+                            <div class="glass-card p-8 w-full max-w-sm">
+                                <h3 class="text-2xl font-semibold mb-4 text-gray-900">Create New List</h3>
+                                <input type="text" id="new-list-name" placeholder="Enter list name"
+                                    class="w-full p-3 mb-6 rounded-lg bg-gray-50/70 border border-border-color input-focus">
+                                <div class="flex justify-end space-x-3">
+                                    <button onclick="hideCreateListModal()" class="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 transition">Cancel</button>
+                                    <button onclick="createList()" class="btn-primary px-4 py-2 rounded-lg text-white">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- 4. RETAILER DASHBOARD (Automation, Insights, Stats) -->
+        <!-- ============================================== -->
+        <section id="retailer-dashboard" class="page-container pt-10">
+            <header class="mb-10 text-center">
+                <h2 class="text-4xl font-thin-h mb-2 text-gray-900">Retail AI Agent: Operational.</h2>
+                <p class="text-lg text-gray-600">Automate, analyze, and optimize your business performance in Patia.</p>
+            </header>
+            
+            <!-- Pro Dashboard Header (Retailer Stats) -->
+            <div class="black-glass-card p-6 mb-10">
+                <h3 class="text-2xl font-light mb-4 text-white">AI Agent Pro Dashboard (Last 30 Days)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="text-center bg-white/10 border border-white/20 p-4 rounded-lg">
+                        <span class="text-4xl font-bold gradient-heading-2">9x</span>
+                        <p class="text-sm text-gray-300">Top Appearance in Search</p>
+                    </div>
+                    <div class="text-center bg-white/10 border border-white/20 p-4 rounded-lg">
+                        <span class="text-4xl font-bold gradient-heading-2">940+</span>
+                        <p class="text-sm text-gray-300">Total Clicks Generated</p>
+                    </div>
+                    <div class="text-center bg-white/10 border border-white/20 p-4 rounded-lg">
+                        <span class="text-4xl font-bold gradient-heading-2">500k+</span>
+                        <p class="text-sm text-gray-300">Search Visibility (Impressions)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Gauge Meter Section -->
+            <div class="black-glass-card p-8 mb-10">
+                <h3 class="text-3xl font-light mb-6 text-white">
+                    <span class="gradient-heading-2">Weekly Performance Meters</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center" id="gauge-meters">
+                    <div>
+                        <div class="gauge-container">
+                            <div class="gauge-wrapper" style="--needle-rotation: 70deg;">
+                                <div class="gauge-dial"></div>
+                                <div class="gauge-mask"></div>
+                                <div class="gauge-needle"></div>
+                                <div class="gauge-center-dial"></div>
+                            </div>
+                        </div>
+                        <p class="gauge-value">+18.5%</p>
+                        <p class="text-sm text-gray-300 font-semibold">Profit Boost</p>
+                    </div>
+                    <div>
+                        <div class="gauge-container">
+                            <div class="gauge-wrapper" style="--needle-rotation: 55deg;">
+                                <div class="gauge-dial"></div>
+                                <div class="gauge-mask"></div>
+                                <div class="gauge-needle"></div>
+                                <div class="gauge-center-dial"></div>
+                            </div>
+                        </div>
+                        <p class="gauge-value">+12.2%</p>
+                        <p class="text-sm text-gray-300 font-semibold">Customer Traffic</p>
+                    </div>
+                    <div>
+                        <div class="gauge-container">
+                            <div class="gauge-wrapper" style="--needle-rotation: 80deg;">
+                                <div class="gauge-dial"></div>
+                                <div class="gauge-mask"></div>
+                                <div class="gauge-needle"></div>
+                                <div class="gauge-center-dial"></div>
+                            </div>
+                        </div>
+                        <p class="gauge-value">95%</p>
+                        <p class="text-sm text-gray-300 font-semibold">Inventory Score</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                
+                <!-- Automation Hub & Insights -->
+                <div class="lg:col-span-2 space-y-10">
+                    <div id="automation" class="black-glass-card p-8">
+                        <h3 class="text-3xl font-light mb-6 flex items-center">
+                            <i class="ph-gear-six-duotone text-4xl mr-3 text-pink-500"></i>
+                            <span class="gradient-heading">Smart Automation Command Center</span>
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="p-4 rounded-xl border border-white/20 flex justify-between items-center bg-white/10 hover:bg-white/20 transition">
+                                <div>
+                                    <p class="font-bold text-white">1. Dynamic Pricing Optimization</p>
+                                    <p class="text-sm text-gray-300">AI adjusts prices based on live competitor stock and demand prediction.</p>
+                                </div>
+                                <button class="text-sm px-4 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition" onclick="handleRetailerAction('dynamic_pricing')">
+                                    Live Optimize <i class="ph-sparkle-fill ml-1"></i>
+                                </button>
+                            </div>
+
+                            <div class="p-4 rounded-xl border border-white/20 flex justify-between items-center bg-white/10 hover:bg-white/20 transition">
+                                <div>
+                                    <p class="font-bold text-white">2. Auto Bill Generator</p>
+                                    <p class="text-sm text-gray-300">Generate and file GST-compliant sales bills instantly.</p>
+                                </div>
+                                <button class="text-sm px-4 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition" onclick="handleRetailerAction('bill_generator')">
+                                    Generate Bill Demo <i class="ph-arrow-right-bold ml-1"></i>
+                                </button>
+                            </div>
+
+                            <div class="p-4 rounded-xl border border-white/20 flex justify-between items-center bg-white/10 hover:bg-white/20 transition">
+                                <div>
+                                    <p class="font-bold text-white">3. Custom Festival Wishes Generator</p>
+                                    <p class="text-sm text-gray-300">Personalized customer greetings (Diwali, Ganesh Chaturthi, etc.) based on purchase history.</p>
+                                </div>
+                                <button class="text-sm px-4 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition" onclick="handleRetailerAction('wishes_generator')">
+                                    Template Demo <i class="ph-arrow-right-bold ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Competitive Insights & Suggestions -->
+                    <div class="black-glass-card p-8">
+                        <h3 class="text-3xl font-light mb-6 flex items-center">
+                            <i class="ph-lightbulb-duotone text-4xl mr-3 text-orange-500"></i>
+                            <span class="gradient-heading">Actionable Business Intelligence</span>
+                        </h3>
+                         <div class="space-y-4">
+                             <div class="p-4 rounded-xl border border-orange-300 bg-orange-900/30">
+                                <p class="font-semibold text-orange-400 mb-1 flex items-center"><i class="ph-arrows-down-up-duotone mr-2"></i> Critical Pricing Alert</p>
+                                <p class="text-sm text-orange-200">Your price for Basmati Rice is 5₹ higher than Mega Mart. Suggestion: Drop price by 3₹ (to ₹212) immediately to capture 30% of local search traffic. (Dynamic Pricing Recommended)</p>
+                            </div>
+                            <div class="p-4 rounded-xl border border-green-300 bg-green-900/30">
+                                <p class="font-semibold text-green-400 mb-1 flex items-center"><i class="ph-trend-up-duotone mr-2"></i> Inventory Growth Opportunity</p>
+                                <p class="text-sm text-green-200">Demand for iPhone 15 Pro Max is spiking due to month-end card offers. Competitor Destiny has low stock. Recommendation: Secure 2 additional units to capture market share this week.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pro Charts -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="black-glass-card p-6">
+                            <h4 class="text-xl font-light mb-4 text-white">Weekly Sales vs. AI Projection</h4>
+                            <div class="w-full h-40 rounded-xl overflow-hidden border border-white/20 flex flex-col justify-end p-2 relative">
+                                <canvas id="sales-line-chart" class="w-full h-full"></canvas>
+                                <!-- Mock data will be drawn by Chart.js -->
+                            </div>
+                        </div>
+                        <div class="black-glass-card p-6">
+                            <h4 class="text-xl font-light mb-4 text-white">Top Category Performance</h4>
+                            <div class="w-full h-40 rounded-xl overflow-hidden border border-white/20 flex flex-col justify-end p-2 relative">
+                                <div class="bar-chart-mockup">
+                                    <div class="bar" style="height: 80%; background: linear-gradient(to top, #ec4899, #d946ef);"></div>
+                                    <div class="bar" style="height: 60%; background: linear-gradient(to top, #f97316, #fcd34d);"></div>
+                                    <div class="bar" style="height: 95%; background: linear-gradient(to top, #22c55e, #4ade80);"></div>
+                                    <div class="bar" style="height: 40%; background: linear-gradient(to top, #007aff, #00c6ff);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pro Stats Column (Black Glass) -->
+                <div class="lg:col-span-1 space-y-10">
+                    <div class="black-glass-card p-6">
+                        <h4 class="text-2xl font-light mb-4 flex items-center text-white">
+                            <i class="ph-chart-bar-duotone text-3xl mr-3 text-primary"></i>
+                            XparkAI Velocity Metrics
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="p-3 bg-white/10 rounded-lg">
+                                <span class="text-xs text-white/70">Top Ranking Rate (90 Days)</span>
+                                <span class="font-bold text-4xl block">92%</span>
+                            </div>
+                            <div class="p-3 bg-white/10 rounded-lg">
+                                <span class="text-xs text-white/70">Sales Conversion Lift (AI)</span>
+                                <span class="font-bold text-4xl block text-green-400">+8.5%</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm pt-2 border-t border-white/20">
+                                <span class="text-white/80 flex items-center"><i class="ph-clock-duotone mr-2 text-lg"></i> Automation Hours Saved</span>
+                                <span class="font-bold text-xl">18.5 hrs</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="black-glass-card p-6">
+                        <h4 class="text-2xl font-light mb-4 flex items-center text-white">
+                            <i class="ph-activity-duotone text-3xl mr-3 text-red-500"></i>
+                            Market Demand Pulse (7 Days)
+                        </h4>
+                        <div class="w-full h-32 bg-white/10 rounded-xl overflow-hidden border border-white/30 flex flex-col justify-end p-2 relative">
+                             <canvas id="demand-line-chart" class="w-full h-full"></canvas>
+                             <p class="text-xs text-white/90 absolute top-2 left-2 font-medium">Demand Index: Highly Volatile</p>
+                        </div>
+                        <p class="text-xs text-white/90 mt-2">Projection shows demand peaking weekends. Optimize stocking now.</p>
+                    </div>
+                    
+                    <div class="black-glass-card p-6">
+                        <h4 class="text-2xl font-light mb-4 flex items-center text-white">
+                            <i class="ph-credit-card-duotone text-3xl mr-3 text-yellow-400"></i>
+                            Active Card Offer Insights
+                        </h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-sm pb-2 border-b border-white/20">
+                                <span class="text-white/80">HDFC Offer Impact</span>
+                                <span class="font-bold text-lg text-green-400">+12% Electronics Traffic</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm pb-2 border-b border-white/20">
+                                <span class="text-white/80">ICICI Offer Status</span>
+                                <span class="font-bold text-lg text-red-400">0 Active Promotions</span>
+                            </div>
+                             <div class="flex justify-between items-center text-sm">
+                                <span class="text-white/80">Recommended Offer Target</span>
+                                <span class="font-bold text-lg text-primary">SBI Shoppers</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- MODALS -->
+        <!-- ============================================== -->
+
+         <!-- Inventory Update Modal -->
+        <div id="inventory-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div class="glass-card p-8 w-full max-w-lg">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-900 flex items-center"><i class="ph-cube-duotone mr-2 text-primary"></i> Live Inventory Update</h3>
+                <p class="text-gray-600 mb-6">Quickly push your current stock levels to the XparkAI network.</p>
+                <div class="space-y-4">
+                    <input type="text" placeholder="Item Name (e.g., Dairy Milk 75g)"
+                        class="w-full p-3 rounded-lg bg-gray-50/70 border border-border-color input-focus">
+                    <input type="number" placeholder="New Quantity in Stock (e.g., 250)"
+                        class="w-full p-3 rounded-lg bg-gray-50/70 border border-border-color input-focus">
+                    <input type="number" placeholder="New Price (in ₹)"
+                        class="w-full p-3 rounded-lg bg-gray-50/70 border border-border-color input-focus">
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button onclick="hideInventoryModal()" class="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 transition">Cancel</button>
+                    <button onclick="alert('Stock update simulated! Data immediately reflected in customer search results.')" class="btn-primary px-4 py-2 rounded-lg text-white">Commit Changes</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Processing/Loading Modal -->
+        <div id="processing-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div class="glass-card p-8 w-full max-w-md text-center">
+                <div id="particle-area">
+                     <i class="ph-infinity-duotone text-5xl text-primary mb-4" style="animation: none;"></i>
+                     <!-- Particles will be generated here by JS -->
+                </div>
+                <h3 class="text-2xl font-semibold mb-2 text-gray-900">Agent Running...</h3>
+                <p class="text-gray-600">Executing complex AI routines and data processing.</p>
+            </div>
+        </div>
+
+        <!-- Bill Generator Output Modal -->
+        <div id="bill-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div class="glass-card p-8 w-full max-w-xl">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-900 flex items-center border-b pb-2"><i class="ph-receipt-duotone mr-2 text-yellow-600"></i> Automated GST Bill (Demo)</h3>
+                <div class="bg-gray-50/70 p-6 rounded-lg space-y-3">
+                    <p class="text-xs text-gray-500 text-right">Invoice Date: 2025-11-16 | GSTIN: 22AAACT9999A1Z2</p>
+                    <h4 class="text-xl font-bold text-gray-900">Invoice: #XP-BBS-78241</h4>
+                    <ul class="border-t border-b py-3 text-sm space-y-1">
+                        <li class="flex justify-between"><span>Basmati Rice (2kg) x 2</span> <span>₹ 430.00</span></li>
+                        <li class="flex justify-between"><span>Dairy Milk (75g) x 10</span> <span>₹ 1000.00</span></li>
+                        <li class="flex justify-between font-semibold"><span>Subtotal</span> <span>₹ 1430.00</span></li>
+                        <li class="flex justify-between text-xs text-green-600"><span>GST (5%)</span> <span>₹ 71.50</span></li>
+                    </ul>
+                    <div class="flex justify-between items-center text-lg font-extrabold text-primary pt-2">
+                        <span>TOTAL AMOUNT DUE</span> <span>₹ 1501.50</span>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button onclick="hideOutputModal('bill-modal')" class="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 transition">Close</button>
+
+                    <button class="btn-primary px-4 py-2 rounded-lg text-white"><i class="ph-download-simple-bold mr-1"></i> Download PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Festive Wish Output Modal -->
+        <div id="wishes-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div class="glass-card p-8 w-full max-w-xl">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-900 flex items-center border-b pb-2"><i class="ph-confetti-duotone mr-2 text-pink-500"></i> AI-Generated Festive Wish Template</h3>
+                <div class="bg-gray-50/70 p-6 rounded-lg space-y-3">
+                    <p class="text-sm text-pink-500 font-semibold mb-2">Target: Customer Segment (High-Value Electronics)</p>
+                    <div class="bg-white p-4 rounded-lg shadow-inner border border-border-color">
+                        <h4 class="text-xl font-bold mb-3 text-gray-900">Happy Diwali from Your Local Electronics Partner!</h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            "Hi [Customer Name], as the lights of Diwali shine, your XparkAI Agent noticed your recent search for the iPhone 15 Pro Max. To celebrate, we're offering you a special 5% bonus discount valid this week only. Thank you for supporting our local business! We wish you and your family a safe and prosperous festival of lights."
+                        </p>
+                        <p class="text-xs text-gray-500 mt-4">Template Parameters: [Customer Name], [Recent Search], [Special Offer].</p>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button onclick="hideOutputModal('wishes-modal')" class="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 transition">Close</button>
+                    <button class="btn-primary px-4 py-2 rounded-lg text-white"><i class="ph-download-simple-bold mr-1"></i> Export Templates (JSON)</button>
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Firebase SDKs and JavaScript Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, query, setDoc, updateDoc, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL VARIABLES (MANDATORY CANVAS SETUP) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-xparkai-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db;
+        let auth;
+        let userId = 'loading';
+        let isAuthReady = false;
+        let shoppingLists = [];
+        let currentListId = null;
+        let unsubscribeLists = null;
+        let currentUserRole = null; 
+        
+        let salesLineChart = null;
+        let demandLineChart = null;
+
+        setLogLevel('Debug');
+        
+        // --- REALISTIC MOCK DATABASE (PATIA, BHUBANESWAR EXPANDED) ---
+        const mockInventory = [
+            { id: 1, name: "Dairy Milk (75g)", quantity: "150pc+", price: 100.00, store: "QuickMart Grocery (Patia)", category: "Grocery", location: "KIIT Square, Patia", distance: 0.4, offer: "2% Card Offer" },
+            { id: 2, name: "Basmati Rice (2kg India Gate)", quantity: "8 bags in stock", price: 215.00, store: "Mega Mart", category: "Grocery", location: "Big Bazar Road", distance: 2.1, offer: "None" },
+            { id: 3, name: "Nandini Paneer (500g)", quantity: "30 packs", price: 120.00, store: "QuickMart Grocery (Patia)", category: "Grocery/Dairy", location: "KIIT Square, Patia", distance: 0.4, offer: "Month End Discount" },
+            { id: 4, name: "Nandini Paneer (500g)", quantity: "5 packs", price: 125.00, store: "Local Dairy Shop", category: "Grocery/Dairy", location: "KIIT Road, Near Gate 3", distance: 0.1, offer: "None" },
+            { id: 5, name: "iPhone 15 Pro Max (256GB)", quantity: "2 units available", price: 159900.00, store: "iWorld Electronics", category: "Electronics", location: "Infocity Square", distance: 0.8, offer: "10% Cashback on HDFC" },
+            { id: 6, name: "iPhone 15 Pro Max (256GB)", quantity: "1 unit", price: 161999.00, store: "Reliance Digital", category: "Electronics", location: "Patia Main Road", distance: 1.5, offer: "None" },
+            { id: 7, name: "iPhone 15 Pro Max (256GB)", quantity: "4 units available", price: 158500.00, store: "Destiny Retail", category: "Electronics", location: "Chandrasekharpur", distance: 3.5, offer: "5% Loyalty Discount" },
+            { id: 12, name: "Cow Milk (1L Local)", quantity: "20L available", price: 58.00, store: "Dairy Fresh Vendor", category: "Grocery/Dairy", location: "KIIT Square Back Alley", distance: 0.2, offer: "Cheapest Near You" },
+            { id: 13, name: "Cow Milk (1L Nandini)", quantity: "50 boxes available", price: 62.00, store: "QuickMart Grocery (Patia)", category: "Grocery/Dairy", location: "KIIT Square, Patia", distance: 0.4, offer: "None" },
+            { id: 8, name: "A4 Notebook (Classmate)", quantity: "500+ in stock", price: 80.00, store: "Sampark Store", category: "Stationary", location: "KIIT Road, Patia", distance: 1.8, offer: "10% EXTRA DISCOUNT" },
+            { id: 11, name: "A+ Blood Group", quantity: "3 units available", price: 0.00, store: "City Central Blood Bank", category: "Emergency/Health", location: "Chandrasekharpur", distance: 5.5, offer: "N/A (Donation)" },
+            { id: 15, name: "Designer Dress (Women's)", quantity: "New Arrivals", price: 3500.00, store: "Fashion Stop Boutique", category: "Dress/Apparel", location: "KIIT Road Main", distance: 1.2, offer: "20% Off Clearance" }
+        ];
+
+        // --- NAVIGATION AND UI LOGIC ---
+        window.navigate = function(pageId) {
+            const pages = ['landing-page', 'login-page', 'customer-dashboard', 'retailer-dashboard'];
+            
+            pages.forEach(id => {
+                const page = document.getElementById(id);
+                if (id === pageId) {
+                    page.style.display = 'block';
+                    setTimeout(() => {
+                        page.classList.add('active');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 10);
+                } else {
+                    page.classList.remove('active');
+                    page.style.display = 'none';
+                }
+            });
+
+            // Handle Navbar visibility and links
+            const navbar = document.getElementById('main-navbar');
+            const navLinks = document.getElementById('nav-links');
+            if (pageId === 'customer-dashboard' || pageId === 'retailer-dashboard') {
+                navbar.classList.remove('hidden');
+                navLinks.innerHTML = '';
+                if (pageId === 'customer-dashboard') {
+                    navLinks.innerHTML = `
+                        <a href="#" class="hover:text-primary transition duration-150" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Search Agent</a>
+                        <a href="#lists" class="hover:text-primary transition duration-150">Smart Lists</a>
+                        <a href="#alerts" class="hover:text-primary transition duration-150">Alerts</a>
+                    `;
+                } else {
+                    navLinks.innerHTML = `
+                        <a href="#automation" class="hover:text-primary transition duration-150" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Automation</a>
+                        <a href="#stats" class="hover:text-primary transition duration-150">Insights</a>
+                    `;
+                    // Render charts when retailer dashboard is shown
+                    setTimeout(renderRetailerCharts, 100); 
+                }
+            } else {
+                navbar.classList.add('hidden');
+            }
+        }
+        
+        window.fakeLogin = function(role) {
+            if (!isAuthReady) {
+                console.error("Auth not ready. Cannot log in.");
+                return;
+            }
+            currentUserRole = role;
+            if (role === 'customer') {
+                navigate('customer-dashboard');
+            } else {
+                navigate('retailer-dashboard');
+                // Trigger gauge animation
+                setTimeout(() => {
+                    const gauges = document.querySelectorAll('#gauge-meters .gauge-wrapper');
+                    gauges.forEach(gauge => {
+                        gauge.style.setProperty('--needle-rotation', gauge.style.getPropertyValue('--needle-rotation'));
+                    });
+                }, 500);
+            }
+        }
+
+        window.logout = function() {
+            currentUserRole = null;
+            navigate('login-page');
+        }
+
+        window.showInventoryModal = function() { document.getElementById('inventory-modal').classList.remove('hidden'); }
+        window.hideInventoryModal = function() { document.getElementById('inventory-modal').classList.add('hidden'); }
+        window.showCreateListModal = function() { document.getElementById('create-list-modal').classList.remove('hidden'); }
+        window.hideCreateListModal = function() { document.getElementById('create-list-modal').classList.add('hidden'); }
+        window.hideOutputModal = function(id) { document.getElementById(id).classList.add('hidden'); }
+
+
+        // --- FIREBASE INITIALIZATION AND AUTHENTICATION ---
+        async function initializeFirebase() {
+            if (!firebaseConfig) {
+                document.getElementById('auth-status').textContent = 'Warning: Firebase config missing. Using mock persistence.';
+                isAuthReady = true; 
+                setTimeout(() => navigate('landing-page'), 10);
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                await new Promise(resolve => {
+                    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                        unsubscribe(); 
+                        if (user) { userId = user.uid; } else {
+                            if (initialAuthToken) { await signInWithCustomToken(auth, initialAuthToken); } 
+                            else { await signInAnonymously(auth); }
+                            userId = auth.currentUser.uid;
+                        }
+                        isAuthReady = true;
+                        document.getElementById('auth-status').textContent = `Secure Session Initialized | User ID: ${userId.substring(0, 8)}...`;
+                        resolve();
+                    });
+                });
+
+                setupListListener();
+
+            } catch (error) {
+                console.error("Firebase Initialization Error:", error);
+                document.getElementById('auth-status').textContent = `Auth Error: ${error.message.substring(0, 50)}...`;
+                isAuthReady = true;
+            }
+            setTimeout(() => navigate('landing-page'), 10);
+        }
+
+
+        // --- AI AGENT QUERY LOGIC (CUSTOMER) ---
+        function formatRupee(amount) {
+            if (amount === 0) return 'FREE';
+            return `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+        }
+        
+        // FIXED MAP URL
+        function getMapIframe(location, store) {
+            const encodedLocation = encodeURIComponent(location + ', Patia, Bhubaneswar');
+            const mapHtml = `
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    style="border:0"
+                    src="https://maps.google.com/maps?q=${encodedLocation}&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                    allowfullscreen>
+                </iframe>
+            `;
+            document.getElementById('map-preview-cust').innerHTML = mapHtml;
+        }
+
+        function getSmartSuggestionCard(item) {
+            let title = '';
+            let text = '';
+            let icon = 'ph-tag-duotone';
+            let bgColor = 'bg-gray-100';
+
+            if (item.category.includes('Electronics') && item.offer.includes('HDFC')) {
+                title = "HDFC Card Offer Alert!";
+                text = "10% Cashback at iWorld Electronics on this item. Maximize your savings at checkout.";
+                icon = 'ph-credit-card-duotone';
+                bgColor = 'bg-blue-100';
+            } else if (item.category.includes('Grocery') && item.distance <= 0.5) {
+                title = "Nearest Shop Advantage";
+                text = `${item.store} is only ${item.distance.toFixed(1)} km away. Optimize fuel costs by visiting now.`;
+                icon = 'ph-car-duotone';
+                bgColor = 'bg-green-100';
+            } else if (item.category.includes('Electronics') && item.store.includes('Destiny')) {
+                 title = "Pro Tip: Loyalty Discount";
+                 text = "Destiny Retail offers 5% Loyalty Discount. Check your existing points before purchase.";
+                 icon = 'ph-star-duotone';
+                 bgColor = 'bg-yellow-100';
+            } else {
+                 return ''; // No specific smart suggestion
+            }
+
+            return `
+                <div class="p-3 ${bgColor} rounded-lg flex items-center shadow-sm">
+                    <i class="${icon} text-xl mr-3 text-gray-700"></i>
+                    <div>
+                        <p class="font-semibold text-sm text-gray-800">${title}</p>
+                        <p class="text-xs text-gray-600">${text}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+
+        window.performQuery = function() {
+            const query = document.getElementById('ai-query').value.trim().toLowerCase();
+            const resultsDiv = document.getElementById('query-results');
+            const suggestionsDiv = document.getElementById('smart-suggestions');
+            
+            resultsDiv.innerHTML = '<div class="flex items-center justify-center space-x-3 text-primary p-6"><i class="ph-cpu-duotone animate-pulse text-3xl"></i><p class="font-medium text-gray-700">XparkAI Agent is performing compound search...</p></div>';
+            suggestionsDiv.classList.add('hidden');
+            suggestionsDiv.innerHTML = `<h5 class="text-lg font-semibold text-gray-800 flex items-center border-t border-border-color pt-4">
+                                <i class="ph-sparkling-duotone text-xl mr-2 text-primary"></i> Smart Shopping Suggestions
+                            </h5>`;
+
+
+            setTimeout(() => {
+                const filteredResults = mockInventory.filter(item => 
+                    item.name.toLowerCase().includes(query) || item.category.toLowerCase().includes(query) || query.includes(item.name.toLowerCase().split(' ')[0])
+                ).sort((a, b) => {
+                    const stockA = a.quantity.toLowerCase().includes("out of stock");
+                    const stockB = b.quantity.toLowerCase().includes("out of stock");
+                    if (stockA !== stockB) return stockA ? 1 : -1;
+                    if (a.price !== b.price) return a.price - b.price; 
+                    return a.distance - b.distance; 
+                }).slice(0, 5); 
+
+                if (filteredResults.length === 0) {
+                    resultsDiv.innerHTML = `<p class="text-gray-500 p-4 border border-border-color rounded-xl bg-white/70">
+                        <i class="ph-info-bold mr-2 text-yellow-500"></i> No Real-Time Match found for "${query}" near Patia.
+                    </p>`;
+                    document.getElementById('price-trend-section').classList.add('hidden');
+                    document.getElementById('map-preview-cust').innerHTML = 'Map will display the location of the best-ranked item.';
+                    return;
+                }
+                
+                // Update Price Trend Analysis & Map
+                document.getElementById('trend-item').textContent = filteredResults[0].name;
+                document.getElementById('price-trend-section').classList.remove('hidden');
+                getMapIframe(filteredResults[0].location, filteredResults[0].store);
+
+                resultsDiv.innerHTML = `<p class="text-md text-gray-700 mb-5 font-medium">
+                    Agent found the Top ${filteredResults.length} options for "${query}" in Patia:
+                </p>`;
+
+                let suggestionContent = '';
+                
+                filteredResults.forEach((item, index) => {
+                    const isOutOfStock = item.quantity.toLowerCase().includes('out of stock');
+                    const statusColor = isOutOfStock ? 'text-red-500' : (item.price === 0 ? 'text-blue-500' : 'text-green-600');
+                    const priceDisplay = formatRupee(item.price);
+                    const rankClass = index === 0 ? 'border-primary shadow-xl glass-card border-2' : 'border-border-color bg-white/70 border';
+                    const cheapestMark = index === 0 ? '<i class="ph-medal-duotone text-xl text-yellow-600 ml-2"></i>' : '';
+
+                    let offerBadge = '';
+                    if (item.offer.includes('10% EXTRA DISCOUNT')) {
+                        offerBadge = `<span class="bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-md">KIIT DISCOUNT</span>`;
+                    } else if (item.offer !== 'None' && item.offer !== 'N/A (Donation)') {
+                        offerBadge = `<span class="bg-yellow-500 text-gray-900 text-xs font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">OFFER</span>`;
+                    }
+                    
+                    const resultCard = document.createElement('div');
+                    resultCard.className = `p-5 rounded-xl transition duration-300 ${rankClass}`;
+
+                    resultCard.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900">${index + 1}. ${item.name}</h4>
+                                <p class="text-xs text-gray-500 mt-0.5">@ ${item.store} - ${item.location}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-3xl font-extrabold ${statusColor}">${priceDisplay}</span>
+                                ${cheapestMark}
+                                ${offerBadge}
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-sm border-t border-border-color pt-2 mt-2">
+                            <span class="font-medium ${statusColor} flex items-center">
+                                <i class="ph-cube-bold mr-1 text-lg"></i> Stock: ${item.quantity}
+                            </span>
+                            <span class="text-gray-500 flex items-center">
+                                <i class="ph-map-pin-duotone mr-1 text-base"></i> ${item.distance.toFixed(1)} km away
+                            </span>
+                            <a href="https://maps.google.com/maps?q=${encodeURIComponent(item.store + ', ' + item.location + ', Bhubaneswar')}" target="_blank" class="text-blue-500 hover:text-blue-700 flex items-center font-semibold text-sm transition duration-150 p-2 rounded-lg bg-gray-100">
+                                Directions <i class="ph-arrow-right-bold ml-1 text-base"></i>
+                            </a>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(resultCard);
+                    
+                    // Collect suggestion content
+                    suggestionContent += getSmartSuggestionCard(item);
+                });
+
+                if (suggestionContent) {
+                    suggestionsDiv.innerHTML += suggestionContent;
+                    suggestionsDiv.classList.remove('hidden');
+                }
+                
+            }, 1000); 
+        }
+        
+        window.setQuery = function(queryText) {
+            document.getElementById('ai-query').value = queryText;
+            performQuery();
+        }
+
+        // --- FIRESTORE LIST LOGIC (CUSTOMER) ---
+        window.selectList = function(listId) {
+            currentListId = listId;
+            renderListSelector();
+            renderCurrentList();
+        }
+
+        function setupListListener() {
+            if (!isAuthReady || !db || unsubscribeLists) return;
+
+            const listCollectionPath = `artifacts/${appId}/users/${userId}/shopping_lists`;
+            const listsRef = collection(db, listCollectionPath);
+            const q = query(listsRef);
+
+            unsubscribeLists = onSnapshot(q, (snapshot) => {
+                shoppingLists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderListSelector();
+                
+                if (currentListId && !shoppingLists.find(list => list.id === currentListId)) {
+                    currentListId = null;
+                    renderCurrentList();
+                } else if (!currentListId && shoppingLists.length > 0) {
+                    selectList(shoppingLists[0].id);
+                } else if (currentListId) {
+                    renderCurrentList();
+                }
+                
+                document.getElementById('add-item-form').classList.remove('hidden');
+            }, (error) => {
+                console.error("Error fetching shopping lists:", error);
+            });
+        }
+
+        function renderListSelector() {
+            const selectorDiv = document.getElementById('list-selector');
+            selectorDiv.innerHTML = '';
+            
+            const newButton = document.createElement('button');
+            newButton.className = "text-sm px-3 py-1 rounded-full bg-white text-gray-600 hover:bg-gray-100 transition duration-150 flex items-center border border-border-color shadow-sm";
+            newButton.setAttribute('onclick', 'showCreateListModal()');
+            newButton.innerHTML = '<i class="ph-plus-bold mr-1"></i> New List';
+            selectorDiv.appendChild(newButton);
+
+            shoppingLists.forEach(list => {
+                const listButton = document.createElement('button');
+                listButton.textContent = list.listName;
+                listButton.className = `text-sm px-3 py-1 rounded-full transition duration-150 font-medium ${
+                    list.id === currentListId 
+                        ? 'bg-primary border border-primary text-white shadow-md' 
+                        : 'bg-white border border-border-color text-gray-700 hover:border-primary shadow-sm'
+                }`;
+                listButton.onclick = () => selectList(list.id);
+                selectorDiv.appendChild(listButton);
+            });
+        }
+
+        function renderCurrentList() {
+            const listElement = document.getElementById('item-list');
+            const listNameDisplay = document.getElementById('list-name-display');
+            listElement.innerHTML = '';
+            
+            document.getElementById('add-item-form').style.display = currentListId ? 'flex' : 'none';
+            if (!isAuthReady) document.getElementById('add-item-form').style.display = 'none';
+
+            if (!currentListId) {
+                listNameDisplay.textContent = 'No List Selected';
+                listElement.innerHTML = '<li class="text-gray-500 italic" id="list-placeholder">Select or create a list to start adding items.</li>';
+                return;
+            }
+
+            const currentList = shoppingLists.find(list => list.id === currentListId);
+            if (!currentList) return;
+
+            listNameDisplay.textContent = currentList.listName;
+            
+            currentList.items.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = `flex items-center justify-between p-3 rounded-lg transition duration-150 border border-border-color ${item.isCompleted ? 'bg-gray-200 line-through text-gray-500' : 'bg-white hover:bg-gray-100'}`;
+                li.innerHTML = `
+                    <div class="flex items-center flex-1 min-w-0">
+                        <input type="checkbox" id="item-${index}" class="h-4 w-4 text-primary bg-white border-gray-300 rounded focus:ring-primary mr-3" ${item.isCompleted ? 'checked' : ''} onchange="toggleItemCompletion(${index})">
+                        <label for="item-${index}" class="truncate font-medium">${item.text}</label>
+                    </div>
+                    <button onclick="deleteItem(${index})" class="text-gray-400 hover:text-red-500 ml-3 p-1 rounded-full hover:bg-gray-200">
+                        <i class="ph-trash-bold"></i>
+                    </button>
+                `;
+                listElement.appendChild(li);
+            });
+        }
+
+        async function createList() {
+            if (!isAuthReady || !db) return;
+            const nameInput = document.getElementById('new-list-name');
+            const listName = nameInput.value.trim();
+
+            if (listName) {
+                try {
+                    const listCollectionPath = `artifacts/${appId}/users/${userId}/shopping_lists`;
+                    const newDocRef = doc(collection(db, listCollectionPath));
+                    await setDoc(newDocRef, { listName: listName, items: [], createdAt: Date.now() });
+                    nameInput.value = '';
+                    hideCreateListModal();
+                    selectList(newDocRef.id);
+                } catch (e) { console.error("Error creating list: ", e); }
+            }
+        }
+
+        async function addItem() {
+            if (!isAuthReady || !currentListId) return;
+            const itemText = document.getElementById('new-item-text').value.trim();
+            if (!itemText) return;
+            const currentList = shoppingLists.find(list => list.id === currentListId);
+            const newItem = { text: itemText, isCompleted: false, addedAt: Date.now() };
+            const updatedItems = [...currentList.items, newItem];
+
+            try {
+                const listDocPath = `artifacts/${appId}/users/${userId}/shopping_lists/${currentListId}`;
+                await updateDoc(doc(db, listDocPath), { items: updatedItems });
+                document.getElementById('new-item-text').value = '';
+            } catch (e) { console.error("Error adding item: ", e); }
+        }
+
+        async function toggleItemCompletion(index) {
+            if (!isAuthReady || !currentListId) return;
+            const currentList = shoppingLists.find(list => list.id === currentListId);
+            const updatedItems = [...currentList.items];
+            updatedItems[index].isCompleted = !updatedItems[index].isCompleted;
+            try {
+                const listDocPath = `artifacts/${appId}/users/${userId}/shopping_lists/${currentListId}`;
+                await updateDoc(doc(db, listDocPath), { items: updatedItems });
+            } catch (e) { console.error("Error toggling item:", e); }
+        }
+
+        async function deleteItem(index) {
+            if (!isAuthReady || !currentListId) return;
+            const currentList = shoppingLists.find(list => list.id === currentListId);
+            const updatedItems = currentList.items.filter((_, i) => i !== index);
+            try {
+                const listDocPath = `artifacts/${appId}/users/${userId}/shopping_lists/${currentListId}`;
+                await updateDoc(doc(db, listDocPath), { items: updatedItems });
+            } catch (e) { console.error("Error deleting item:", e); }
+        }
+
+        // --- RETAILER AGENT ACTIONS & EFFECTS ---
+
+        window.handleRetailerAction = function(actionType) {
+            const processingModal = document.getElementById('processing-modal');
+            const particleContainer = document.getElementById('particle-area');
+            const modalTitle = processingModal.querySelector('h3');
+            const modalText = processingModal.querySelector('p');
+
+            processingModal.classList.remove('hidden');
+            particleContainer.innerHTML = ''; 
+            
+            // Set modal text based on action
+            if (actionType === 'dynamic_pricing') {
+                 modalTitle.textContent = "Pricing Agent Active...";
+                 modalText.textContent = "Executing 10,000 simulations to determine optimal price points.";
+            } else {
+                 modalTitle.textContent = "Agent Running...";
+                 modalText.textContent = "Executing complex AI routines and data processing.";
+            }
+
+            // Particle effect generation: Lots of tiny particles
+            for (let i = 0; i < 80; i++) { // Increased particle count
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.top = `${Math.random() * 150}px`;
+                particle.style.left = `${Math.random() * 150}px`;
+                particle.style.animationDuration = `${1 + Math.random() * 1.5}s`;
+                particle.style.animationDelay = `${Math.random() * 0.5}s`;
+                particle.style.backgroundColor = i % 5 === 0 ? 'white' : 'var(--primary-color)';
+                particleContainer.appendChild(particle);
+            }
+
+            setTimeout(() => {
+                processingModal.classList.add('hidden');
+                particleContainer.innerHTML = ''; 
+
+                if (actionType === 'bill_generator') {
+                    document.getElementById('bill-modal').classList.remove('hidden');
+                } else if (actionType === 'wishes_generator') {
+                    document.getElementById('wishes-modal').classList.remove('hidden');
+                } else if (actionType === 'dynamic_pricing') {
+                    alert('Dynamic Pricing Simulation Complete! Prices for Basmati Rice and iPhone Pro Max adjusted to capture 8% higher margin while maintaining top search ranking.');
+                }
+            }, 2500); 
+        }
+
+        // --- RETAILER CHART RENDERING ---
+        function renderRetailerCharts() {
+            // Chart.js instance for Sales Line Chart
+            const salesCtx = document.getElementById('sales-line-chart')?.getContext('2d');
+            if (salesCtx && !salesLineChart) {
+                const salesGradient = salesCtx.createLinearGradient(0, 0, 0, 150);
+                salesGradient.addColorStop(0, 'rgba(0, 122, 255, 0.5)');
+                salesGradient.addColorStop(1, 'rgba(0, 122, 255, 0)');
+                
+                salesLineChart = new Chart(salesCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [
+                            {
+                                label: 'AI Projection',
+                                data: [12000, 15000, 14000, 18000, 17000, 22000, 21000],
+                                borderColor: '#a855f7',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                borderDash: [5, 5]
+                            },
+                            {
+                                label: 'Actual Sales',
+                                data: [11000, 14500, 13000, 18500, 16500, 23000, 22000],
+                                borderColor: '#007aff',
+                                borderWidth: 3,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                fill: true,
+                                backgroundColor: salesGradient
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: { y: { display: false }, x: { ticks: { color: '#9ca3af' } } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // Chart.js instance for Demand Line Chart
+            const demandCtx = document.getElementById('demand-line-chart')?.getContext('2d');
+            if (demandCtx && !demandLineChart) {
+                const demandGradient = demandCtx.createLinearGradient(0, 0, 0, 150);
+                demandGradient.addColorStop(0, 'rgba(239, 68, 68, 0.7)');
+                demandGradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                
+                demandLineChart = new Chart(demandCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Market Demand',
+                            data: [30, 50, 45, 80, 60, 95, 70],
+                            borderColor: '#ef4444',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            pointRadius: 0,
+                            fill: true,
+                            backgroundColor: demandGradient
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: { y: { display: false }, x: { display: false } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+
+        // --- EXPOSE FUNCTIONS TO GLOBAL WINDOW ---
+        window.createList = createList;
+        window.addItem = addItem;
+        window.toggleItemCompletion = toggleItemCompletion;
+        window.deleteItem = deleteItem;
+
+
+        // --- START APPLICATION ---
+        window.onload = initializeFirebase;
+        
+    </script>
+</body>
+</html>
