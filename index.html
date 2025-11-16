@@ -20,6 +20,8 @@
             --card-color: rgba(255, 255, 255, 0.9); /* Subtle Transparency for Glass */
             --border-color: #e5e7eb;
             --positive-green: #22c55e;
+            --black-card-bg: rgba(10, 10, 10, 0.85);
+            --black-card-bg-inner: #1f2937;
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -43,7 +45,7 @@
 
         /* Black Glass Card (Apple Product Card Style) */
         .black-glass-card {
-            background-color: rgba(10, 10, 10, 0.85); /* Near Black with slight transparency */
+            background-color: var(--black-card-bg);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -133,7 +135,7 @@
             0% { height: 0; }
         }
 
-        /* Particle effect adjustment: Constrained within the processing modal */
+        /* Particle effect adjustment */
         #processing-modal #particle-area {
             position: relative;
             width: 150px;
@@ -160,18 +162,19 @@
             100% { transform: scale(0); opacity: 0; }
         }
 
-        /* NEW: Gauge Meter CSS */
+        /* MINIMAL GAUGE METER CSS (Apple-like) */
         .gauge-container {
             width: 100%;
-            max-width: 200px;
+            max-width: 160px; /* Smaller */
             margin: 0 auto;
+            text-align: center;
         }
         .gauge-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 50%; /* 2:1 Aspect Ratio */
+            padding-top: 50%; /* 2:1 Aspect Ratio (half circle) */
             overflow: hidden;
-            border-radius: 100px 100px 0 0;
+            border-radius: 100px 100px 0 0; /* Half circle shape */
         }
         .gauge-dial {
             position: absolute;
@@ -180,52 +183,60 @@
             width: 100%;
             height: 200%; /* Full height for rotation */
             border-radius: 50%;
+            /* Minimal color bands from red to green */
             background: conic-gradient(
-                #ef4444 0deg 45deg, 
-                #f97316 45deg 90deg, 
-                #22c55e 90deg 180deg
+                #ef4444 0deg 45deg,    /* Red */
+                #f97316 45deg 90deg,    /* Orange */
+                #22c55e 90deg 180deg    /* Green */
             );
-            border: 12px solid #374151; /* Dark gray bg */
-            border-bottom-color: transparent;
+            /* This border is the background track, with minimal thickness */
+            border: 5px solid #374151; /* Minimal: 5px */
+            border-bottom-color: transparent; /* Hide bottom border for half-circle effect */
             transform: rotate(-90deg); /* Start from the left */
         }
         .gauge-mask {
             position: absolute;
-            top: 15%;
-            left: 15%;
-            width: 70%;
-            height: 140%;
-            background: #1f2937; /* Black card bg */
+            top: 5px; /* Adjusted to fit the 5px border */
+            left: 5px; /* Adjusted to fit the 5px border */
+            width: calc(100% - 10px); /* Adjusted for 5px border */
+            height: calc(200% - 10px); /* Adjusted for 5px border */
+            background: var(--black-card-bg-inner); /* Black card bg */
             border-radius: 50%;
         }
         .gauge-needle {
             position: absolute;
             bottom: 0;
             left: 50%;
-            width: 3px;
-            height: 45%;
-            background: var(--positive-green); /* Green needle */
+            width: 1.5px; /* Very thin needle */
+            height: 40%; /* Reaches from center to dial, shorter */
+            background: white; /* White needle for contrast */
             transform-origin: bottom center;
             transform: translateX(-50%) rotate(var(--needle-rotation, 0deg));
             transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 0 5px var(--positive-green);
+            box-shadow: 0 0 3px rgba(255, 255, 255, 0.7); /* Subtle glow */
         }
         .gauge-center-dial {
             position: absolute;
-            bottom: -8px;
+            bottom: -3px; /* Adjusted position */
             left: 50%;
             transform: translateX(-50%);
-            width: 16px;
-            height: 16px;
-            background: #9ca3af;
+            width: 8px; /* Smaller center dot */
+            height: 8px; /* Smaller center dot */
+            background: white;
             border-radius: 50%;
-            border: 2px solid white;
         }
         .gauge-value {
-            font-size: 1.8rem;
+            font-size: 1.4rem; /* Smaller for mobile */
             font-weight: 700;
             color: var(--positive-green);
-            margin-top: -10px;
+            margin-top: -10px; /* Pull value up into the gauge */
+            position: relative;
+            z-index: 10;
+        }
+        .gauge-label {
+             font-size: 0.75rem; /* Smaller label */
+             color: #d1d5db; /* Lighter text for label */
+             margin-top: 0px; /* Closer to value */
         }
     </style>
 </head>
@@ -250,16 +261,16 @@
         <!-- 1. LANDING PAGE -->
         <!-- ============================================== -->
         <section id="landing-page" class="page-container active h-full pt-16">
-            <div class="glass-card p-12 md:p-20 text-center">
-                <h2 class="text-7xl md:text-9xl font-thin-h mb-4 tracking-tight leading-none text-gray-900">
-                    <span class="gradient-heading">XparkAI</span>: Your City, <span class="gradient-heading-2">Unlocked</span>.
+            <div class="glass-card p-8 md:p-20 text-center"> <!-- Reduced padding on mobile -->
+                <h2 class="text-6xl md:text-8xl font-thin-h mb-4 tracking-tight leading-none text-gray-900">
+                    <span class="gradient-heading">XparkAI:</span> Your<br> City, <span class="gradient-heading-2">Unlocked.</span>
                 </h2>
-                <p class="text-2xl md:text-3xl text-gray-600 max-w-4xl mx-auto mb-10 font-light italic">
+                <p class="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-10 font-light">
                     "Apki Dukaan, Apki Ungliyon Par."
                 </p>
 
                 <div class="max-w-4xl mx-auto space-y-8 text-left text-gray-700">
-                    <h3 class="text-3xl font-light gradient-heading-2">Beyond Search: A Cognitive Commerce Network.</h3>
+                    <h3 class="text-2xl md:text-3xl font-light gradient-heading-2">Beyond Search: A Cognitive Commerce Network.</h3>
                     <p class="text-body leading-relaxed">
                         Imagine an AI that holds the real-time inventory, price history, and stock of every local shop—from the tiny electronics repair store to the largest Reliance Digital. XparkAI is that reality. It uses a collective, private database to provide consumers with the absolute best deal, while equipping retailers with AI agents that handle all the repetitive tasks, freeing them to focus purely on growth and customer service.
                     </p>
@@ -324,15 +335,15 @@
         <!-- 3. CUSTOMER DASHBOARD (Search, Map, Lists) -->
         <!-- ============================================== -->
         <section id="customer-dashboard" class="page-container pt-10">
-            <header class="mb-10 text-center">
-                <h2 class="text-4xl font-thin-h mb-2 text-gray-900">Your Personal AI Agent is Active.</h2>
+            <header class="mb-12 text-center"> <!-- Increased margin-bottom -->
+                <h2 class="text-3xl lg:text-4xl font-thin-h mb-2 text-gray-900">Your Personal AI Agent is Active.</h2> <!-- Shrunk heading -->
                 <p class="text-lg text-gray-600">Real-time inventory access across Patia, Bhubaneswar.</p>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 
                 <!-- Search & Results -->
-                <div class="lg:col-span-2 glass-card p-8 h-full flex flex-col">
+                <div class="lg:col-span-2 glass-card p-6 md:p-8 h-full flex flex-col">
                     <h3 class="text-3xl font-light mb-6 flex items-center">
                         <i class="ph-magnifying-glass-duotone text-4xl mr-3 text-blue-500"></i>
                         <span class="gradient-heading">Intelligent Product Search</span>
@@ -340,10 +351,10 @@
                     
                     <div class="mb-6 flex flex-col space-y-4">
                         <div class="flex space-x-3">
-                            <input type="text" id="ai-query" placeholder="Search for item (e.g., iPhone 15 Pro Max, A+ Blood, Nandini Paneer)"
+                            <input type="text" id="ai-query" placeholder="Search for item (e.g., iPhone 15 Pro Max)"
                                 class="flex-grow p-4 rounded-xl bg-white border input-focus transition duration-200 placeholder-gray-400">
                             <button id="search-button" onclick="performQuery()"
-                                class="btn-primary px-8 py-4 rounded-xl font-semibold text-white flex items-center justify-center whitespace-nowrap">
+                                class="btn-primary px-6 md:px-8 py-4 rounded-xl font-semibold text-white flex items-center justify-center whitespace-nowrap">
                                 <i class="ph-magnifying-glass-bold text-xl mr-2"></i> Search
                             </button>
                         </div>
@@ -355,7 +366,7 @@
                         </div>
                     </div>
                     
-                    <div class="flex-grow bg-white/80 p-6 rounded-2xl shadow-inner overflow-y-auto min-h-[300px] border border-border-color">
+                    <div class="flex-grow bg-white/80 p-4 md:p-6 rounded-2xl shadow-inner overflow-y-auto min-h-[300px] border border-border-color">
                         <h4 class="text-xl font-medium mb-4 text-gray-700 border-b border-border-color pb-2">Top 5 Real-Time Results (Patia)</h4>
                         <div id="query-results" class="space-y-4">
                             <p class="text-gray-500 italic flex items-center">
@@ -408,8 +419,8 @@
                             <i class="ph-map-pin-duotone text-3xl mr-3 text-primary"></i>
                             Live Map Preview
                         </h4>
-                        <div id="map-preview-cust" class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden border border-border-color flex items-center justify-center text-gray-500 italic text-sm">
-                            Map will display the location of the best-ranked item.
+                        <div id="map-preview-cust" class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden border border-border-color flex items-center justify-center text-gray-500 italic text-sm relative">
+                            <!-- Map Iframe will be injected here -->
                         </div>
                     </div>
                     
@@ -445,7 +456,7 @@
                         </div>
                         
                         <!-- Modal for Creating New List -->
-                        <div id="create-list-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+                        <div id="create-list-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
                             <div class="glass-card p-8 w-full max-w-sm">
                                 <h3 class="text-2xl font-semibold mb-4 text-gray-900">Create New List</h3>
                                 <input type="text" id="new-list-name" placeholder="Enter list name"
@@ -465,15 +476,15 @@
         <!-- ============================================== -->
         <!-- 4. RETAILER DASHBOARD (Automation, Insights, Stats) -->
         <!-- ============================================== -->
-        <section id="retailer-dashboard" class="page-container pt-10">
-            <header class="mb-10 text-center">
-                <h2 class="text-4xl font-thin-h mb-2 text-gray-900">Retail AI Agent: Operational.</h2>
+        <section id="retailer-dashboard" class="page-container pt-10 retailer-dashboard">
+            <header class="mb-12 text-center"> <!-- Increased margin-bottom -->
+                <h2 class="text-3xl lg:text-4xl font-thin-h mb-2 text-gray-900">Retail AI Agent: Operational.</h2> <!-- Shrunk heading -->
                 <p class="text-lg text-gray-600">Automate, analyze, and optimize your business performance in Patia.</p>
             </header>
             
             <!-- Pro Dashboard Header (Retailer Stats) -->
             <div class="black-glass-card p-6 mb-10">
-                <h3 class="text-2xl font-light mb-4 text-white">AI Agent Pro Dashboard (Last 30 Days)</h3>
+                <h3 class="text-xl md:text-2xl font-light mb-4 text-white">AI Agent Pro Dashboard (Last 30 Days)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="text-center bg-white/10 border border-white/20 p-4 rounded-lg">
                         <span class="text-4xl font-bold gradient-heading-2">9x</span>
@@ -491,14 +502,15 @@
             </div>
 
             <!-- NEW: Gauge Meter Section -->
-            <div class="black-glass-card p-8 mb-10">
-                <h3 class="text-3xl font-light mb-6 text-white">
+            <div class="black-glass-card p-6 md:p-8 mb-10">
+                <h3 class="text-xl md:text-2xl font-light mb-6 text-white">
                     <span class="gradient-heading-2">Weekly Performance Meters</span>
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center" id="gauge-meters">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center" id="gauge-meters">
+                    <!-- Gauge 1 -->
                     <div>
                         <div class="gauge-container">
-                            <div class="gauge-wrapper" style="--needle-rotation: 70deg;">
+                            <div class="gauge-wrapper" style="--needle-rotation: 70deg;"> <!-- 70% of 180deg (0-90) -> ~63deg -->
                                 <div class="gauge-dial"></div>
                                 <div class="gauge-mask"></div>
                                 <div class="gauge-needle"></div>
@@ -506,11 +518,12 @@
                             </div>
                         </div>
                         <p class="gauge-value">+18.5%</p>
-                        <p class="text-sm text-gray-300 font-semibold">Profit Boost</p>
+                        <p class="gauge-label">Profit Boost</p>
                     </div>
+                    <!-- Gauge 2 -->
                     <div>
                         <div class="gauge-container">
-                            <div class="gauge-wrapper" style="--needle-rotation: 55deg;">
+                            <div class="gauge-wrapper" style="--needle-rotation: 55deg;"> <!-- 55% of 180deg -> ~49.5deg -->
                                 <div class="gauge-dial"></div>
                                 <div class="gauge-mask"></div>
                                 <div class="gauge-needle"></div>
@@ -518,11 +531,12 @@
                             </div>
                         </div>
                         <p class="gauge-value">+12.2%</p>
-                        <p class="text-sm text-gray-300 font-semibold">Customer Traffic</p>
+                        <p class="gauge-label">Customer Traffic</p>
                     </div>
+                    <!-- Gauge 3 -->
                     <div>
                         <div class="gauge-container">
-                            <div class="gauge-wrapper" style="--needle-rotation: 80deg;">
+                            <div class="gauge-wrapper" style="--needle-rotation: 80deg;"> <!-- 80% of 180deg -> ~72deg -->
                                 <div class="gauge-dial"></div>
                                 <div class="gauge-mask"></div>
                                 <div class="gauge-needle"></div>
@@ -530,56 +544,61 @@
                             </div>
                         </div>
                         <p class="gauge-value">95%</p>
-                        <p class="text-sm text-gray-300 font-semibold">Inventory Score</p>
+                        <p class="gauge-label">Inventory Score</p>
                     </div>
                 </div>
             </div>
             
+            <!-- Main Grid for Content -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 
-                <!-- Automation Hub & Insights -->
+                <!-- Left Column: Automation & Insights -->
                 <div class="lg:col-span-2 space-y-10">
-                    <div id="automation" class="black-glass-card p-8">
-                        <h3 class="text-3xl font-light mb-6 flex items-center">
+                    <!-- Automation -->
+                    <div id="automation" class="black-glass-card p-6 md:p-8">
+                        <h3 class="text-2xl md:text-3xl font-light mb-6 flex items-center">
                             <i class="ph-gear-six-duotone text-4xl mr-3 text-pink-500"></i>
                             <span class="gradient-heading">Smart Automation Command Center</span>
                         </h3>
                         <div class="space-y-4">
-                            <div class="p-4 rounded-xl border border-white/20 flex justify-between items-center bg-white/10 hover:bg-white/20 transition">
-                                <div>
+                            <!-- Mobile Optimized Card -->
+                            <div class="p-4 rounded-xl border border-white/20 flex flex-col sm:flex-row justify-between sm:items-center bg-white/10 hover:bg-white/20 transition">
+                                <div class="mb-3 sm:mb-0">
                                     <p class="font-bold text-white">1. Dynamic Pricing Optimization</p>
                                     <p class="text-sm text-gray-300">AI adjusts prices based on live competitor stock and demand prediction.</p>
                                 </div>
-                                <button class="text-sm px-4 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition" onclick="handleRetailerAction('dynamic_pricing')">
+                                <button class="text-sm px-4 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition w-full sm:w-auto flex-shrink-0" onclick="handleRetailerAction('dynamic_pricing')">
                                     Live Optimize <i class="ph-sparkle-fill ml-1"></i>
                                 </button>
                             </div>
 
-                            <div class="p-4 rounded-xl border border-white/20 flex justify-between items-center bg-white/10 hover:bg-white/20 transition">
-                                <div>
+                            <!-- Mobile Optimized Card -->
+                            <div class="p-4 rounded-xl border border-white/20 flex flex-col sm:flex-row justify-between sm:items-center bg-white/10 hover:bg-white/20 transition">
+                                <div class="mb-3 sm:mb-0">
                                     <p class="font-bold text-white">2. Auto Bill Generator</p>
                                     <p class="text-sm text-gray-300">Generate and file GST-compliant sales bills instantly.</p>
                                 </div>
-                                <button class="text-sm px-4 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition" onclick="handleRetailerAction('bill_generator')">
+                                <button class="text-sm px-4 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition w-full sm:w-auto flex-shrink-0" onclick="handleRetailerAction('bill_generator')">
                                     Generate Bill Demo <i class="ph-arrow-right-bold ml-1"></i>
                                 </button>
                             </div>
 
-                            <div class="p-4 rounded-xl border border-white/20 flex justify-between items-center bg-white/10 hover:bg-white/20 transition">
-                                <div>
+                            <!-- Mobile Optimized Card -->
+                            <div class="p-4 rounded-xl border border-white/20 flex flex-col sm:flex-row justify-between sm:items-center bg-white/10 hover:bg-white/20 transition">
+                                <div class="mb-3 sm:mb-0">
                                     <p class="font-bold text-white">3. Custom Festival Wishes Generator</p>
-                                    <p class="text-sm text-gray-300">Personalized customer greetings (Diwali, Ganesh Chaturthi, etc.) based on purchase history.</p>
+                                    <p class="text-sm text-gray-300">Personalized customer greetings (Diwali, etc.) based on purchase history.</p>
                                 </div>
-                                <button class="text-sm px-4 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition" onclick="handleRetailerAction('wishes_generator')">
+                                <button class="text-sm px-4 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition w-full sm:w-auto flex-shrink-0" onclick="handleRetailerAction('wishes_generator')">
                                     Template Demo <i class="ph-arrow-right-bold ml-1"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Competitive Insights & Suggestions -->
-                    <div class="black-glass-card p-8">
-                        <h3 class="text-3xl font-light mb-6 flex items-center">
+                    <!-- Competitive Insights -->
+                    <div class="black-glass-card p-6 md:p-8">
+                        <h3 class="text-2xl md:text-3xl font-light mb-6 flex items-center">
                             <i class="ph-lightbulb-duotone text-4xl mr-3 text-orange-500"></i>
                             <span class="gradient-heading">Actionable Business Intelligence</span>
                         </h3>
@@ -601,7 +620,6 @@
                             <h4 class="text-xl font-light mb-4 text-white">Weekly Sales vs. AI Projection</h4>
                             <div class="w-full h-40 rounded-xl overflow-hidden border border-white/20 flex flex-col justify-end p-2 relative">
                                 <canvas id="sales-line-chart" class="w-full h-full"></canvas>
-                                <!-- Mock data will be drawn by Chart.js -->
                             </div>
                         </div>
                         <div class="black-glass-card p-6">
@@ -618,7 +636,7 @@
                     </div>
                 </div>
 
-                <!-- Pro Stats Column (Black Glass) -->
+                <!-- Right Column: Pro Stats -->
                 <div class="lg:col-span-1 space-y-10">
                     <div class="black-glass-card p-6">
                         <h4 class="text-2xl font-light mb-4 flex items-center text-white">
@@ -682,7 +700,7 @@
         <!-- ============================================== -->
 
          <!-- Inventory Update Modal -->
-        <div id="inventory-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div id="inventory-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div class="glass-card p-8 w-full max-w-lg">
                 <h3 class="text-2xl font-semibold mb-4 text-gray-900 flex items-center"><i class="ph-cube-duotone mr-2 text-primary"></i> Live Inventory Update</h3>
                 <p class="text-gray-600 mb-6">Quickly push your current stock levels to the XparkAI network.</p>
@@ -702,7 +720,7 @@
         </div>
         
         <!-- Action Processing/Loading Modal -->
-        <div id="processing-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div id="processing-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div class="glass-card p-8 w-full max-w-md text-center">
                 <div id="particle-area">
                      <i class="ph-infinity-duotone text-5xl text-primary mb-4" style="animation: none;"></i>
@@ -714,7 +732,7 @@
         </div>
 
         <!-- Bill Generator Output Modal -->
-        <div id="bill-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div id="bill-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div class="glass-card p-8 w-full max-w-xl">
                 <h3 class="text-2xl font-semibold mb-4 text-gray-900 flex items-center border-b pb-2"><i class="ph-receipt-duotone mr-2 text-yellow-600"></i> Automated GST Bill (Demo)</h3>
                 <div class="bg-gray-50/70 p-6 rounded-lg space-y-3">
@@ -739,7 +757,7 @@
         </div>
 
         <!-- Festive Wish Output Modal -->
-        <div id="wishes-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div id="wishes-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div class="glass-card p-8 w-full max-w-xl">
                 <h3 class="text-2xl font-semibold mb-4 text-gray-900 flex items-center border-b pb-2"><i class="ph-confetti-duotone mr-2 text-pink-500"></i> AI-Generated Festive Wish Template</h3>
                 <div class="bg-gray-50/70 p-6 rounded-lg space-y-3">
@@ -863,7 +881,12 @@
                 setTimeout(() => {
                     const gauges = document.querySelectorAll('#gauge-meters .gauge-wrapper');
                     gauges.forEach(gauge => {
-                        gauge.style.setProperty('--needle-rotation', gauge.style.getPropertyValue('--needle-rotation'));
+                        // This forces a reflow and re-triggers the transition
+                        const rotation = gauge.style.getPropertyValue('--needle-rotation');
+                        gauge.style.setProperty('--needle-rotation', '0deg'); // Reset
+                        setTimeout(() => {
+                             gauge.style.setProperty('--needle-rotation', rotation); // Apply
+                        }, 20);
                     });
                 }, 500);
             }
@@ -1007,7 +1030,7 @@
                         <i class="ph-info-bold mr-2 text-yellow-500"></i> No Real-Time Match found for "${query}" near Patia.
                     </p>`;
                     document.getElementById('price-trend-section').classList.add('hidden');
-                    document.getElementById('map-preview-cust').innerHTML = 'Map will display the location of the best-ranked item.';
+                    document.getElementById('map-preview-cust').innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Map will display the location of the best-ranked item.</p>';
                     return;
                 }
                 
@@ -1310,7 +1333,10 @@
                     },
                     options: {
                         responsive: true, maintainAspectRatio: false,
-                        scales: { y: { display: false }, x: { ticks: { color: '#9ca3af' } } },
+                        scales: { 
+                            y: { display: false }, 
+                            x: { ticks: { color: '#9ca3af' } } 
+                        },
                         plugins: { legend: { display: false } }
                     }
                 });
